@@ -38,4 +38,10 @@ public class ReturnBookController {
                         && "Active".equals(r.getStatus()))
                 .collect(Collectors.toList());
     }
+
+    public List<BorrowingRecord> getBorrowingHistory(LibraryUser user) {
+        return borrowingRecords.stream()
+                .filter(r -> r.getUser().equals(user))
+                .collect(Collectors.toList());
+    }
 }
