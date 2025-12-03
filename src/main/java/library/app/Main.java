@@ -121,7 +121,7 @@ public class Main {
                         System.out.println("Borrow failed (book not found or not available).\n");
                     }
                 }
-                case 4 -> { // View active borrowings
+                case 4 -> { // View active borrowings (current user)
                     System.out.println("Active borrowings for " + currentUser.getName() + ":");
                     var active = returnController.getActiveBorrowings(currentUser);
                     if (active.isEmpty()) {
@@ -167,7 +167,7 @@ public class Main {
                     manageController.addBook(newBook);
                     System.out.println("Book added to catalog.\n");
                 }
-                case 7 -> { // Update book (officer only, basit)
+                case 7 -> { // Update book (officer only)
                     if (!isOfficer) {
                         System.out.println("Only officers can manage books.\n");
                         break;
@@ -208,6 +208,43 @@ public class Main {
                     manageController.removeBook(id);
                     System.out.println("If the book existed, it has been removed.\n");
                 }
+                case 9 -> { // View user transaction history (OFFICER)
+                    if (!isOfficer) {
+                        System.out.println("Only officers can view user history.\n");
+                        break;
+                    }
+
+                    System.out.print("Enter user id to view history: ");
+                    int uid = readInt();
+
+                    LibraryUser targetUser = null;
+                    if (uid == student.getUserId()) {
+                        targetUser = student;
+                    } else if (uid == officer.getUserId()) {
+                        targetUser = officer;
+                    }
+
+                    if (targetUser == null) {
+                        System.out.println("User not found.\n");
+                        break;
+                    }
+
+                    var history = returnController.getBorrowingHistory(targetUser);
+
+                    if (history.isEmpty()) {
+                        System.out.println("No transactions found for user: " + targetUser.getName() + "\n");
+                    } else {
+                        System.out.println("Transaction history for " + targetUser.getName() + ":");
+                        for (BorrowingRecord r : history) {
+                            System.out.println("Record " + r.getRecordId()
+                                    + " | Book: " + r.getBook().getTitle()
+                                    + " | Status: " + r.getStatus()
+                                    + " | Borrowed: " + r.getBorrowDate()
+                                    + " | Returned: " + r.getReturnDate());
+                        }
+                        System.out.println();
+                    }
+                }
                 default -> System.out.println("Invalid option.\n");
             }
         }
@@ -227,6 +264,7 @@ public class Main {
             System.out.println("6 - Add book");
             System.out.println("7 - Update book");
             System.out.println("8 - Remove book");
+            System.out.println("9 - View user transaction history");
         }
         System.out.println("0 - Exit");
     }
