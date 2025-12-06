@@ -4,12 +4,29 @@ import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import java.io.*;
 import java.lang.reflect.Type;
+import java.time.LocalDate;
 import java.util.*;
 
 public class BorrowingRecordStorage {
     private static final String FILE_PATH = "borrowing_records.json";
-    private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
+    private static final Gson gson = new GsonBuilder()
+            .registerTypeAdapter(LocalDate.class, new JsonSerializer<LocalDate>() {
+                @Override
+                public JsonElement serialize(LocalDate src, Type typeOfSrc, JsonSerializationContext context) {
+                    // LocalDate -> "2025-12-06" gibi String yaz
+                    return new JsonPrimitive(src.toString());
+                }
+            })
+            .registerTypeAdapter(LocalDate.class, new JsonDeserializer<LocalDate>() {
+                @Override
+                public LocalDate deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+                        throws JsonParseException {
+                    // "2025-12-06" -> LocalDate
+                    return LocalDate.parse(json.getAsString());
+                }
+            })
+            .setPrettyPrinting()
+            .create();
     public static void saveRecords(List<BorrowingRecord> records) {
         try (Writer writer = new FileWriter(FILE_PATH)) {
             gson.toJson(records, writer);

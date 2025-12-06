@@ -1,4 +1,5 @@
 package library.controller;
+import java.util.ArrayList;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,18 +15,17 @@ public class ReturnBookController {
     }
 
     public boolean returnBook(LibraryUser user, int bookId) {
-        if (user == null) return false;
+        int targetUserId = user.getUserId();
 
-        // find active borrowing record
-        for (BorrowingRecord record : borrowingRecords) {
-            if (record.getUser().equals(user)
-                    && record.getBook().getBookId() == bookId
-                    && "Active".equals(record.getStatus())) {
+        for (BorrowingRecord r : borrowingRecords) {
+            boolean sameUser = r.getUser() != null && r.getUser().getUserId() == targetUserId;
+            boolean sameBook = r.getBook() != null && r.getBook().getBookId() == bookId;
+            boolean isActive = "Active".equalsIgnoreCase(r.getStatus());
 
-                record.markReturned(LocalDate.now());
-
-                Book book = record.getBook();
-                book.increaseAvailableCopies();
+            if (sameUser && sameBook && isActive) {
+                r.setStatus("Returned");
+                r.setReturnDate(LocalDate.now());
+                r.getBook().increaseAvailableCopies();
                 return true;
             }
         }
@@ -33,15 +33,29 @@ public class ReturnBookController {
     }
 
     public List<BorrowingRecord> getActiveBorrowings(LibraryUser user) {
-        return borrowingRecords.stream()
-                .filter(r -> r.getUser().equals(user)
-                        && "Active".equals(r.getStatus()))
-                .collect(Collectors.toList());
+        List<BorrowingRecord> result = new ArrayList<>();
+        int targetUserId = user.getUserId();
+
+        for (BorrowingRecord r : borrowingRecords) {
+            boolean sameUser = r.getUser() != null && r.getUser().getUserId() == targetUserId;
+            boolean isActive = "Active".equalsIgnoreCase(r.getStatus());
+            if (sameUser && isActive) {
+                result.add(r);
+            }
+        }
+        return result;
     }
 
     public List<BorrowingRecord> getBorrowingHistory(LibraryUser user) {
-        return borrowingRecords.stream()
-                .filter(r -> r.getUser().equals(user))
-                .collect(Collectors.toList());
+        List<BorrowingRecord> result = new ArrayList<>();
+        int targetUserId = user.getUserId();
+
+        for (BorrowingRecord r : borrowingRecords) {
+            boolean sameUser = r.getUser() != null && r.getUser().getUserId() == targetUserId;
+            if (sameUser) {
+                result.add(r);
+            }
+        }
+        return result;
     }
 }

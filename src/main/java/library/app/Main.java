@@ -1,6 +1,7 @@
 package library.app;
 import library.controller.*;
 import library.model.*;
+import library.persistence.BorrowingRecordStorage;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ public class Main {
         // 1) SYSTEM SETUP
         // ================================
         Catalog catalog = new Catalog();
-        List<BorrowingRecord> borrowingRecords = new ArrayList<>();
+        List<BorrowingRecord> borrowingRecords = BorrowingRecordStorage.loadRecords();
 
         SearchController searchController = new SearchController(catalog);
         BorrowBookController borrowController = new BorrowBookController(catalog, borrowingRecords);
@@ -82,6 +83,7 @@ public class Main {
 
             switch (choice) {
                 case 0 -> {
+                    BorrowingRecordStorage.saveRecords(borrowingRecords);
                     System.out.println("Exiting system. Goodbye!");
                     running = false;
                 }
@@ -117,6 +119,7 @@ public class Main {
                     boolean ok = borrowController.borrowBook(currentUser, bookId);
                     if (ok) {
                         System.out.println("Book borrowed successfully.\n");
+                        BorrowingRecordStorage.saveRecords(borrowingRecords);
                     } else {
                         System.out.println("Borrow failed (book not found or not available).\n");
                     }

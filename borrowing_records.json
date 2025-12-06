@@ -1,0 +1,42 @@
+[
+  {
+    "recordId": 1,
+    "borrowDate": "2025-12-06",
+    "status": "Active",
+    "user": {
+      "userId": 1,
+      "name": "Alice",
+      "email": "alice@mail.com",
+      "password": "1234"
+    },
+    "book": {
+      "bookId": 101,
+      "title": "Data Structures",
+      "author": "Mark Lewis",
+      "category": "CS",
+      "publicationYear": 2010,
+      "totalCopies": 3,
+      "availableCopies": 2
+    }
+  },
+  {
+    "recordId": 2,
+    "borrowDate": "2025-12-06",
+    "status": "Active",
+    "user": {
+      "userId": 1,
+      "name": "Alice",
+      "email": "alice@mail.com",
+      "password": "1234"
+    },
+    "book": {
+      "bookId": 102,
+      "title": "Operating Systems",
+      "author": "Silberschatz",
+      "category": "CS",
+      "publicationYear": 2014,
+      "totalCopies": 2,
+      "availableCopies": 1
+    }
+  }
+]
